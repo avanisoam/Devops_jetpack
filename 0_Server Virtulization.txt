@@ -1,0 +1,317 @@
+How To Set Up Nginx Server Blocks (Virtual Hosts) on Ubuntu 16.04:(https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04)
+
+1.Create Droplete and Install openssh-server as usual using following link: 
+https://www.codeproject.com/Articles/5326406/Create-a-Digital-Ocean-Droplet-for-NET-Core-Web-AP
+
+2.We are continuing with root user and not making any dummy user
+
+3.Install Nginx(https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04)and(https://www.codeproject.com/Articles/5326406/Create-a-Digital-Ocean-Droplet-for-NET-Core-Web-AP)
+ $ sudo apt-get install nginx
+
+M-Eco : Ngnix installation done.
+
+4. Adjust the Firewall
+ $ sudo ufw app list
+
+Output :
+Available applications:
+  Nginx Full
+  Nginx HTTP
+  Nginx HTTPS
+  OpenSSH
+
+M-Eco : Firewall setup done.
+
+5. install Certbot:
+ $ sudo apt install python3-certbot-nginx
+
+M-Eco : Certbot installation done.
+
+6.The firewall should also be configured with the commands:
+$ ufw allow ssh
+$ ufw enable
+$ ufw allow http
+$ ufw allow https
+$ sudo ufw allow 'Nginx Full'
+$sudo ufw allow 'Nginx HTTP'
+$ sudo ufw status
+
+
+$ sudo ufw status
+
+Output:
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                  
+Nginx HTTP                 ALLOW       Anywhere                  
+OpenSSH (v6)               ALLOW       Anywhere (v6)             
+Nginx HTTP (v6)            ALLOW       Anywhere (v6)
+
+M-Eco : Firewall advanced configuration done.
+
+7. Check your Web Server:
+ $ systemctl status nginx
+
+Output:
+● nginx.service - A high performance web server and a reverse proxy server
+   Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+   Active: active (running) since Mon 2016-04-18 16:14:00 EDT; 4min 2s ago
+ Main PID: 12857 (nginx)
+   CGroup: /system.slice/nginx.service
+           ├─12857 nginx: master process /usr/sbin/nginx -g daemon on; master_process on
+           └─12858 nginx: worker process
+
+M-Eco: Verify Ngnix final status.
+
+(Optional step:)
+If you do not know your server’s IP address, you can get it a few different ways from the command line.
+
+$ ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'
+
+or
+
+sudo apt-get install curl (curl install command)
+curl -4 icanhazip.com
+
+
+8. http://server_domain_or_IP
+
+output:You should see the default Nginx landing page, which should look something like this:
+
+M-Eco: Verify Ngnix configuration in Digital Ocean Server by IP
+
+9. The domain names we’ll use in this guide are example.com and test.com.
+
+10. We need to create these directories for each of our sites. The -p flag tells mkdir to create any necessary parent directories along the way:
+
+ $ sudo mkdir -p /var/www/example.com/html
+$ sudo mkdir -p /var/www/test.com/html
+sudo mkdir -p /var/www/hitntry.com/html
+sudo mkdir -p /var/www/bharatkegaon.com/html
+sudo mkdir -p /var/www/bharatkelog.com/html
+sudo mkdir -p /var/www/anukramanika.com/html
+sudo mkdir -p /var/www/karyapatrika.com/html
+sudo mkdir -p /var/www/kathboli.com/html
+sudo mkdir -p /var/www/kunba.in/html
+sudo mkdir -p /var/www/thatholiya.com/html
+sudo mkdir -p /var/www/upaakhyaan.com/html
+sudo mkdir -p /var/www/work-sheets.com/html
+sudo mkdir -p /var/www/worksheetsfactory.com/html
+sudo mkdir -p /var/www/writeinhindi.com/html
+sudo mkdir -p /var/www/yashiinformatics.com/html
+
+11. This will allow us to easily create or edit the content in this directory:
+
+$ sudo chown -R $USER:$USER /var/www/example.com/html
+$ sudo chown -R $USER:$USER /var/www/test.com/html
+sudo chown -R $USER:$USER /var/www/hitntry.com/html
+sudo chown -R $USER:$USER /var/www/bharatkegaon.com/html
+sudo chown -R $USER:$USER /var/www/bharatkelog.com/html
+sudo chown -R $USER:$USER /var/www/anukramanika.com/html
+sudo chown -R $USER:$USER /var/www/karyapatrika.com/html
+sudo chown -R $USER:$USER /var/www/kathboli.com/html
+sudo chown -R $USER:$USER /var/www/kunba.in/html
+sudo chown -R $USER:$USER /var/www/thatholiya.com/html
+sudo chown -R $USER:$USER /var/www/upaakhyaan.com/html
+sudo chown -R $USER:$USER /var/www/work-sheets.com/html
+sudo chown -R $USER:$USER /var/www/worksheetsfactory.com/html
+sudo chown -R $USER:$USER /var/www/writeinhindi.com/html
+sudo chown -R $USER:$USER /var/www/yashiinformatics.com/html
+
+12. The permissions of our web roots should be correct already if you have not modified your umask value, but we can make sure by typing:
+
+$ sudo chmod -R 755 /var/www
+
+13.  Creating Sample Pages for Each Site:
+
+$ nano /var/www/example.com/html/index.html
+
+Inside the file, we’ll create a really basic file that indicates what site we are currently accessing. It will look like this:
+
+<html>
+    <head>
+        <title>Welcome to Example.com!</title>
+    </head>
+    <body>
+        <h1>Success! The example.com server block is working!</h1>
+    </body>
+</html>
+
+Save and close the file when you are finished. To do this in nano, press CTRL+o to write the file out, then CTRL+x to exit.
+
+14. Since the file for our second site is basically going to be the same, we can copy it over to our second document root like this:
+
+$ cp /var/www/example.com/html/index.html /var/www/test.com/html/
+
+Now, we can open the new file in our editor:
+
+$ nano /var/www/test.com/html/index.html
+
+Modify it so that it refers to our second domain:
+
+<html>
+    <head>
+        <title>Welcome to Test.com!</title>
+    </head>
+    <body>
+        <h1>Success!  The test.com server block is working!</h1>
+    </body>
+</html>
+
+15. Creating Server Block Files for Each Domain
+
+Creating the First Server Block File
+
+As mentioned above, we will create our first server block config file by copying over the default file:
+
+$ sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/example.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/hitntry.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/bharatkegaon.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/bharatkelog.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/anukramanika.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/karyapatrika.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/kathboli.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/kunba.in
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/thatholiya.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/upaakhyaan.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/work-sheets.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/worksheetsfactory.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/writeinhindi.com
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/yashiinformatics.com
+
+Now, open the new file you created in your text editor with sudo privileges:
+$ sudo nano /etc/nginx/sites-available/example.com
+
+Ignoring the commented lines, the file will look similar to this:
+
+server {
+        listen 80;
+        listen [::]:80;
+
+        root /var/www/example.com/html;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name example.com www.example.com;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}
+
+That is all we need for a basic configuration. Save and close the file to exit.
+
+16. Creating the Second Server Block File
+
+$ sudo cp /etc/nginx/sites-available/example.com /etc/nginx/sites-available/test.com
+
+ Open the new file with sudo privileges in your editor:
+
+$ sudo nano /etc/nginx/sites-available/test.com
+
+When you are finished, your file will likely look something like this:
+
+server {
+        listen 80;
+        listen [::]:80;
+
+        root /var/www/test.com/html;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name test.com www.test.com;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}
+
+When you are finished, save and close the file.
+
+
+17. Enabling your Server Blocks and Restart Nginx:
+
+$ sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+$ sudo ln -s /etc/nginx/sites-available/test.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/hitntry.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/bharatkegaon.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/bharatkelog.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/anukramanika.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/karyapatrika.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/kathboli.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/kunba.in /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/thatholiya.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/upaakhyaan.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/work-sheets.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/worksheetsfactory.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/writeinhindi.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/yashiinformatics.com /etc/nginx/sites-enabled/
+
+18. Open this file now: /etc/nginx/nginx.conf
+
+Within the file, find the "server_names_hash_bucket_size 64" directive.
+ Remove the # symbol to uncomment the line:
+Like this: 
+
+http {
+    . . .
+
+    server_names_hash_bucket_size 64;
+
+    . . .
+}
+
+Save and close the file when you are finished.
+
+19. Next, test to make sure that there are no syntax errors in any of your Nginx files:
+ $ sudo nginx -t
+
+M-Eco: Verify Ngnix for all sun-Domains files/folders extracted from zip.
+
+20. Update your A records (@ and www) on the DNS server pointing to the IP of your Droplet.
+
+M-Eco: Manual step to update A-records in respective Domain Name Provider.
+
+21.Once you've given the A records time to update through the Inernet's DNS system, you can run this command:
+
+$ sudo certbot --nginx -d [domain].[ext] -d www.[domain].[ext]
+sudo certbot --nginx -d hitntry.com -d www.hitntry.com
+sudo certbot --nginx -d bharatkegaon.com -d www.bharatkegaon.com
+sudo certbot --nginx -d bharatkelog.com -d www.bharatkelog.com
+sudo certbot --nginx -d anukramanika.com -d www.anukramanika.com
+sudo certbot --nginx -d karyapatrika.com -d www.karyapatrika.com
+sudo certbot --nginx -d kathboli.com -d www.kathboli.com
+sudo certbot --nginx -d kunba.in -d www.kunba.in
+sudo certbot --nginx -d thatholiya.com -d www.thatholiya.com
+sudo certbot --nginx -d upaakhyaan.com -d www.upaakhyaan.com
+sudo certbot --nginx -d work-sheets.com -d www.work-sheets.com
+sudo certbot --nginx -d worksheetsfactory.com -d www.worksheetsfactory.com
+sudo certbot --nginx -d writeinhindi.com -d www.writeinhindi.com
+sudo certbot --nginx -d yashiinformatics.com -d www.yashiinformatics.com
+
+M-Eco: Certificate generated for all Sub-Domains
+
+Do this for both of your domains.
+
+At this point, you should be able to access the website with https://www.[domain].[ext]
+
+[NOTE]: If site not reached occured then make sure that router might making problem because it might not updating its cache. check the site through mobile data.
+
+
+to change the default port on server:
+dotnet testapi.dll --urls=http://localhost:5001/   
+or
+
+dotnet testapi.dll --urls=http://localhost:3001/
+
+dotnet UpaakhyaanFinal.Server.dll --urls=http://localhost:2001/
+dotnet testapi.Server.dll --urls=http://localhost:2024/
+dotnet KunbaServer.dll --urls=http://localhost:2024/
+
+
+
+-------------------------------------------------------------------------
+
+M-Eco: Server and Sub-Domain setup with basic html page done. 
+
+

@@ -1,0 +1,193 @@
+https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-22-04
+
+Step1: Install Ngnix (Refer file 0_Server Virtulization.txt)
+
+Step2:  Installing MySQL
+$ sudo apt install mysql-server
+
+$ sudo mysql_secure_installation
+(Answer questions and write yes in all(optional step))
+
+$ sudo mysql
+
+$ exit
+
+Step 3 – Installing PHP
+
+$ sudo apt-get update
+
+$ sudo apt install php8.2   (Not working in most of the cases try the following commands)
+or
+$ sudo apt install php8.2-fpm php-mysql (install php with mysql)
+or
+$ sudo apt install php8.2-fpm (install php without mysql)
+
+
+$ php -v
+
+Step 4 — Configuring Nginx to Use the PHP Processor
+
+Refer file 0_Server Virtulization.txt for this step (or you already perform these steps as you follow step 1)
+
+Change the etc/ngnix/sites-available
+
+```
+
+server {
+
+    listen 80;
+    root /var/www/your_domain/html;
+    index index.html index.htm index.php index.nginx-debian.html;
+    
+    server_name your_domain www.your_domain;   
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+     }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    listen [::]:443 ssl; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/your_domain/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/your_domain/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+```
+
+[Note : Need not to  make file in sites-enabled folder as this file automatically reflect its copy in the sites-enabled folder]
+
+[Disclaimer: Do not unlink the default ngnix file. Otherwise it will break shared domain hosting setup.]
+
+$ sudo nginx -t
+
+$ sudo systemctl reload nginx
+
+$ nano /var/www/your_domain/index.html
+
+
+Step 5 –Testing PHP with Nginx
+
+$ nano /var/www/your_domain/info.php
+
+copy following code in above php file:
+
+<?php
+phpinfo();
+
+check : https://server_domain_or_IP/info.php
+
+
+Output:
+
+You should able to see php info default page.
+
+Step 6 — Testing Database Connection from PHP 
+
+$ sudo mysql
+
+$ CREATE DATABASE example_database;
+
+$ CREATE USER 'example_user'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
+
+$ GRANT ALL ON example_database.* TO 'example_user'@'%';
+
+$ exit
+
+M-Eco : Now you are exit from the admin account as you created another user called - 'example_user' .
+
+Step 7: Perform steps as newly created user (example_user)
+
+$ mysql -u example_user -p
+
+$ SHOW DATABASES;
+
+Output
++--------------------+
+| Database           |
++--------------------+
+| example_database   |
+| information_schema |
++--------------------+
+2 rows in set (0.000 sec)
+
+$ CREATE TABLE example_database.todo_list (
+	item_id INT AUTO_INCREMENT,
+	content VARCHAR(255),
+	PRIMARY KEY(item_id)
+);
+
+$ INSERT INTO example_database.todo_list (content) VALUES ("My first important item");
+
+$ SELECT * FROM example_database.todo_list;
+
+Output
++---------+--------------------------+
+| item_id | content                  |
++---------+--------------------------+
+|       1 | My first important item  |
++---------+--------------------------+
+1 rows in set (0.000 sec)
+
+$ exit
+
+Now, create a php file in var/www/your_domain/todo_list.php
+
+Write following code snippet in it:
+
+<?php
+$user = "example_user";
+$password = "password";
+$database = "example_database";
+$table = "todo_list";
+
+try {
+  $db = new PDO("mysql:host=localhost;dbname=$database", $user, $password);
+  echo "<h2>TODO</h2><ol>"; 
+  foreach($db->query("SELECT content FROM $table") as $row) {
+    echo "<li>" . $row['content'] . "</li>";
+  }
+  echo "</ol>";
+} catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    die();
+}
+
+
+Test the new page:
+
+http://server_domain_or_IP/todo_list.php
+
+[Make sure that php version - 8.2 is installed]
+
+Step 8 (optional step) : Adding adminer on server
+
+1. Download following file:
+(Can be downloaded from : https://www.adminer.org/#download.
+choose this file : 
+Adminer 4.8.1 for MySQL (.php, 356 kB), English only (.php, 208 kB) )
+
+2. The downloaded file is uploaded at var/www/your_domain/
+
+3. Run this file on browser: https://www.your_domain/adminer-4.8.1-mysql.php
+
+4. Login with:
+ user : example_user
+ password : password
+ Database name: example_database
+
+You will now be able to see the dashboard for your database and can perforn CRUD through this portal.
+
+
+

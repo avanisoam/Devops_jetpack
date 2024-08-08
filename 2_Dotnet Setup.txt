@@ -1,0 +1,71 @@
+https://www.codeproject.com/Articles/5326406/Create-a-Digital-Ocean-Droplet-for-NET-Core-Web-AP
+
+Step1: Follow 0_ServerVirtulization.txt
+
+Step2: Install .NET 8
+
+$ sudo snap install dotnet-sdk --classic --channel=8.0
+$ sudo snap alias dotnet-sdk.dotnet dotnet 
+$ sudo snap install dotnet-runtime-80 --classic
+$ export DOTNET_ROOT=/snap/dotnet-sdk/current
+
+
+Replace ngnix file with following code:
+
+server {
+
+        root /var/www/kathboli.com/html;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name kathboli.com www.kathboli.com;
+
+        # location / {
+        #         try_files $uri $uri/ =404;
+        # }
+
+
+        location / {
+            
+            # First attempt to serve request as file, then
+            # as directory, then fall back to displaying a 404.
+            # try_files $uri $uri/ =404;
+            
+            proxy_pass http://localhost:2024;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection keep-alive;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+    listen [::]:443 ssl; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/kathboli.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/kathboli.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+Upload Service file
+
+Restart ngnix
+
+sudo systemctl reload nginx
+
+
+sudo systemctl enable upaakhyaan.service
+sudo systemctl start upaakhyaan.service
+sudo systemctl stop upaakhyaan.service
+
+sudo systemctl enable kathboli.service
+sudo systemctl start kathboli.service
+sudo systemctl stop kathboli.service
+
+sudo systemctl enable kunba.service
+sudo systemctl start kunba.service
+sudo systemctl stop kunba.service
+

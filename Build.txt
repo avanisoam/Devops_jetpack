@@ -1,0 +1,81 @@
+/snap/dotnet-sdk/current/dotnet /home/testapi/Server/bin/Debug/net7.0/testapi.Server.dll
+
+
+sudo systemctl enable testapi.service
+
+sudo systemctl start testapi.service
+
+sudo systemctl stop Upaakhyaan.service
+sudo systemctl stop hitntry.service
+
+sudo /etc/init.d/nginx reload
+
+
+http://www.hitntry.com/
+
+sudo reboot
+
+journalctl -u testapi.service
+
+sudo journalctl --rotate
+sudo journalctl --vacuum-time=1s
+
+https://learn.microsoft.com/en-gb/dotnet/core/deploying/trimming/trim-self-contained
+
+dotnet publish --configuration Release -p:PublishTrimmed=false
+
+dotnet publish -p:BlazorEnableCompression=false
+
+dotnet publish --configuration Release -p:BlazorEnableCompression=false -p:PublishTrimmed=false
+
+https://stackoverflow.com/questions/66458281/published-hosted-blazor-wasm-app-only-shows-loading
+
+/snap/dotnet-sdk/current/dotnet /home/testapi/Server/bin/Debug/net7.0/testapi.Server.dll
+
+/snap/dotnet-sdk/current/dotnet /home/testapi/Server/bin/Release/net7.0/testapi.Server.dll
+
+
+
+----------------------------
+
+/snap/dotnet-sdk/current/dotnet /home/hitntry/Server/bin/Release/net7.0/publish/testapi.Server.dll
+
+
+Python on server : https://tecadmin.net/how-to-install-python-3-9-on-ubuntu-20-04/
+
+Install Certbot in Ubuntu-22.04 : https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
+
+
+Generate Artifacts on local machine:
+
+0. Change DB from sql to sqlite
+1. Delete Release folder
+2. Navigate to Server and open command prompt
+3. run - dotnet publish --configuration Release (it will generate the artifacts)
+4.Navigate to publish folder on local on command prompt
+5.run - dotnet testapi.Server.dll (it will  run the service from artifacts )
+6. test on local - localhost://5000
+7.stop the service
+8. replace publish folder on production from publish folder on Local machine
+9. Copy database file in publish folder and update rights.
+10.start the service
+
+(Always remember before uploading any project - comment out ensure created, ensure deleted lines sa well as DbInitializer.initialize line from Program.cs and check appsetting.cs if the db is pointing
+towards LocalDatabase.db or not)
+
+
+
+sudo apt-get install unzip
+unzip publish_IN_V1.zip 
+unzip publish_JBNK1.zip
+
+unzip kathboli.zip
+unzip upaakhyaan.zip
+
+unzip html.zip
+
+
+sudo apt install php-zip
+
+sudo apt-get install php-curl
+unzip public.zip

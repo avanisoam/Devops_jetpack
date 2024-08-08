@@ -1,0 +1,9 @@
+Prerequisit:
+
+WinSCP and PuTTY
+
+Approach:
+
+1. One by One transfer
+2. Zip and Extract Transfer
+3.Vedu-FTP Transfer
